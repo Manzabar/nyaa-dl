@@ -65,25 +65,25 @@ else:
         download_url = no_ssl_url.replace("view", "download")
         view_url = no_ssl_url
 
-# Print debugging info
-print "Original URL :", results.url
-print "Download URL :", download_url
-print "View URL     :", view_url
-
 r = requests.get(view_url)
 tree = fromstring(r.content)
 title = tree.findtext('.//title')
 filename = title.replace('NT > ', '')
 torrent = filename +'.torrent'
 
-webFile = urllib.urlopen(download_url)
-localFile = open(torrent, 'wb')
-localFile.write(webFile.read())
-webFile.close()
-localFile.close()
-
-# Print more debugging info
+# Print debugging info
+print "\nOriginal URL :", results.url
+print "Download URL :", download_url
+print "View URL     :", view_url
 print "Title        :", title
 print "Filename     :", filename
 print "Torrent      :", torrent
-#print "Output      :", newfile
+
+if os.path.exists(torrent):
+    print "\nThis torrent file already exists!\n"
+else:
+    webFile = urllib.urlopen(download_url)
+    localFile = open(torrent, 'wb')
+    localFile.write(webFile.read())
+    webFile.close()
+    localFile.close()

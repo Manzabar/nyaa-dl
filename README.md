@@ -12,14 +12,15 @@ This will print a few comments to your command-line and write a file, named "[Co
 
 CHANGELOG
 ================================
-* First Release (0.0.0)
+* 0.0.1: Added some basic error handling.
+* 0.0.0: First Release
 
 TODO
 ================================
 * Add exception handling
   * Catch failed downloads
-  * Catch passing a download rather than a view link to the script.
 * Add ability to pass a list of links from a file.
+* Add ability to handle HTTPS urls.
 
 LICENSE
 ================================
