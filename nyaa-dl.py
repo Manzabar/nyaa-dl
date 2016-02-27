@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #Name: nyaa-dl
-#Version: 0.0.0
+#Version: 0.0.1
 
 # This is free and unencumbered software released into the public domain.
 #
@@ -30,28 +30,60 @@
 
 import argparse
 from lxml.html import fromstring
+import os.path
 import requests
 import urllib
+
+error = 0
 
 parser = argparse.ArgumentParser(prog='nyaa-dl')
 parser.add_argument('-u', action="store", dest="url", help='The url from nyaa to parse and download.')
 parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.0.0')
 results = parser.parse_args()
-parsed_url = results.url.replace("view", "download")
 
-print "Original URL:", results.url
-print "Parsed URL:", parsed_url
+try:
+    no_ssl_url = results.url.replace('https', 'http')
+except AttributeError:
+    print "URL did not use HTTPS"
+    error = 1
+else:
+    if error == 1:
+        no_ssl_url = results.url
+    if error == 0:
+        no_ssl_url = results.url.replace('https', 'http')
 
-r = requests.get(results.url)
+try:
+    download_url = no_ssl_url.replace("view", "download")
+except AttributeError:
+    print "URL was already a download link"
+    error = 1
+else:
+    if error == 1:
+        download_url = no_ssl_url
+        view_url = no_ssl_url.replace("download", "view")
+    if error == 0:
+        download_url = no_ssl_url.replace("view", "download")
+        view_url = no_ssl_url
+
+# Print debugging info
+print "Original URL :", results.url
+print "Download URL :", download_url
+print "View URL     :", view_url
+
+r = requests.get(view_url)
 tree = fromstring(r.content)
 title = tree.findtext('.//title')
-print "Title:", title
+filename = title.replace('NT > ', '')
+torrent = filename +'.torrent'
 
-filename = title.replace('NT > ', '')+'.torrent'
-print "Filename:", filename
-
-webFile = urllib.urlopen(parsed_url)
-localFile = open(filename, 'wb')
+webFile = urllib.urlopen(download_url)
+localFile = open(torrent, 'wb')
 localFile.write(webFile.read())
 webFile.close()
 localFile.close()
+
+# Print more debugging info
+print "Title        :", title
+print "Filename     :", filename
+print "Torrent      :", torrent
+#print "Output      :", newfile
