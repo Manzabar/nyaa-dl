@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #Name: nyaa-dl
-#Version: 0.0.1
+#Version: 0.1.0
 
 # This is free and unencumbered software released into the public domain.
 #
@@ -41,29 +41,15 @@ parser.add_argument('-u', action="store", dest="url", help='The url from nyaa to
 parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.0.0')
 results = parser.parse_args()
 
-try:
-    no_ssl_url = results.url.replace('https', 'http')
-except AttributeError:
-    print "URL did not use HTTPS"
-    error = 1
-else:
-    if error == 1:
-        no_ssl_url = results.url
-    if error == 0:
-        no_ssl_url = results.url.replace('https', 'http')
+# Print debugging info
+print "Original URL :", results.url
 
-try:
-    download_url = no_ssl_url.replace("view", "download")
-except AttributeError:
-    print "URL was already a download link"
-    error = 1
-else:
-    if error == 1:
-        download_url = no_ssl_url
-        view_url = no_ssl_url.replace("download", "view")
-    if error == 0:
-        download_url = no_ssl_url.replace("view", "download")
-        view_url = no_ssl_url
+view_url = 'http://www.nyaa.se/?page=view&tid=' + results.url[results.url.find('tid=')+4:]
+download_url = 'http://www.nyaa.se/?page=download&tid=' + results.url[results.url.find('tid=')+4:]
+
+# Print rewritten URLs
+print "Download URL :", download_url
+print "View URL     :", view_url
 
 r = requests.get(view_url)
 tree = fromstring(r.content)
@@ -71,16 +57,13 @@ title = tree.findtext('.//title')
 filename = title.replace('NT > ', '')
 torrent = filename +'.torrent'
 
-# Print debugging info
-print "\nOriginal URL :", results.url
-print "Download URL :", download_url
-print "View URL     :", view_url
+# Print NYAA's view page title, the expected filename, and the torrent filename.
 print "Title        :", title
 print "Filename     :", filename
 print "Torrent      :", torrent
 
 if os.path.exists(torrent):
-    print "\nThis torrent file already exists!\n"
+    print "File already exists."
 else:
     webFile = urllib.urlopen(download_url)
     localFile = open(torrent, 'wb')

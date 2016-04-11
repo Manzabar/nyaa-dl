@@ -12,6 +12,7 @@ This will print a few comments to your command-line and write a file, named "[Co
 
 CHANGELOG
 ================================
+* 0.1.0: Switched from my weak attempt at error handling to a better method for rewriting the URLs.
 * 0.0.1: Added some basic error handling.
 * 0.0.0: First Release
 
@@ -20,6 +21,8 @@ TODO
 * Add exception handling
   * Catch failed downloads
 * Add ability to pass a list of links from a file.
+  * Maybe remove -u option when passing only a single URL to the script?
+  * Maybe add an option to display details and otherwise just dowload the torrent file?
 * Add ability to handle HTTPS urls.
 
 LICENSE
