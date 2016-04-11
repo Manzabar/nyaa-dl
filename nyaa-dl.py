@@ -35,10 +35,11 @@ import requests
 import urllib
 
 error = 0
+script_version = '0.1.1'
 
 parser = argparse.ArgumentParser(prog='nyaa-dl')
 parser.add_argument('-u', action="store", dest="url", help='The url from nyaa to parse and download.')
-parser.add_argument('-v', '--version', action='version', version='%(prog)s 0.0.0')
+parser.add_argument('-v', '--version', action='version', version='%(prog)s '+ script_version)
 results = parser.parse_args()
 
 # Print debugging info
