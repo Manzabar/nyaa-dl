@@ -6,12 +6,16 @@ This script was written under Python 2.7.6. It may work under other versions of 
 
 USAGE
 ================================
-python nyaa-dl -u 'http://www.nyaa.se/?page=view&tid=781669'
-
+python nyaa-dl.py -u 'http://www.nyaa.se/?page=view&tid=781669'
 This will print a few comments to your command-line and write a file, named "[Commie] Lupin the Third (2015) - 03 [4588CA05].mkv.torrent" to the current directory.
+
+python nyaa-dl.py -i 'list'
+This will read a file, named "list" in the same directory as the script. That file should have one NYAA torrent URL per line. The script will then download those torrents to the curent directory.
 
 CHANGELOG
 ================================
+* 0.3.0: Cleaned up the code in the script to be in functions, rather copying/pasting the bits I needed to reuse.
+* 0.2.0: Added option to pass a file with a list of NYAA torrent files (one per line).
 * 0.1.1: Updated version# in output from '-v'.
 * 0.1.0: Switched from my weak attempt at error handling to a better method for rewriting the URLs.
 * 0.0.1: Added some basic error handling.
@@ -21,9 +25,8 @@ TODO
 ================================
 * Add exception handling
   * Catch failed downloads
-* Add ability to pass a list of links from a file.
-  * Maybe remove -u option when passing only a single URL to the script?
-  * Maybe add an option to display details and otherwise just dowload the torrent file?
+* Maybe remove -u option when passing only a single URL to the script?
+* Maybe add an option to display details and otherwise just dowload the torrent file?
 * Add ability to handle HTTPS urls.
 
 LICENSE
