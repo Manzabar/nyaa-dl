@@ -26,6 +26,7 @@
 # For more information, please refer to <http://unlicense.org>
 
 script_name = 'nyaa-dl'
+script_version = '0.3.0'
 
 import argparse
 from lxml.html import fromstring
