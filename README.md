@@ -14,6 +14,7 @@ This will read a file, named "list" in the same directory as the script. That fi
 
 CHANGELOG
 ================================
+* 0.3.1: More code cleanup and fixed problems with loading list of torrents from a file.
 * 0.3.0: Cleaned up the code in the script to be in functions, rather copying/pasting the bits I needed to reuse.
 * 0.2.0: Added option to pass a file with a list of NYAA torrent files (one per line).
 * 0.1.1: Updated version# in output from '-v'.

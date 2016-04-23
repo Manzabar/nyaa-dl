@@ -26,7 +26,7 @@
 # For more information, please refer to <http://unlicense.org>
 
 script_name = 'nyaa-dl'
-script_version = '0.3.0'
+script_version = '0.3.1'
 
 import argparse
 from lxml.html import fromstring
@@ -34,14 +34,21 @@ import os
 import requests
 import urllib
 
-parser = argparse.ArgumentParser(prog='nyaa-dl')
-parser.add_argument('-u', action="store", dest="url", help='The URL from nyaa to parse and download.')
-parser.add_argument('-i', action="store", dest="inputfilename", type=argparse.FileType('r'), help='The input file holding multiple URLs (one per line) from nyaa to parse and download.')
-parser.add_argument('-v', '--version', action='version', version='%(prog)s '+ script_version)
-args = parser.parse_args()
+
+def open_torrent_list(filename, debug):
+    """Returns a file object holding the file with a list of torrents
+    """
+    f = open(filename, 'rU')
+    if not debug:
+            return f
+
+    if debug == 'Y':
+        print 'Filename     :', filename
+        print 'CWD          :', os.getcwd()
+        return f
 
 
-def torrent_filename(view_url, debug=''):
+def torrent_filename(view_url, debug):
     """Returns the filename to give the torrent to be downloaded.
     """
     r = requests.get(view_url)
@@ -61,7 +68,7 @@ def torrent_filename(view_url, debug=''):
         return torrent
 
 
-def torrent_id(url, debug=''):
+def torrent_id(url, debug):
     """Parses the url to find the ID# for the torrent
     """
     id = url[url.find('tid=')+4:]
@@ -74,7 +81,7 @@ def torrent_id(url, debug=''):
         return id
 
 
-def torrent_url(url_type, id_num, debug=''):
+def torrent_url(url_type, id_num, debug='Y'):
     """Builds the view/download url for further processing.
     """
     full_url = 'http://www.nyaa.se/?page=' + url_type + '&tid=' + id_num
@@ -98,28 +105,45 @@ def torrent_download(download_url, torrent):
     localFile.close()
 
 
-# Use the following code when passing a single URL to to the script
-if (args.url):
-    t_Id = torrent_id(args.url, '')
-    view_url = torrent_url('view', t_Id, '')
-    download_url = torrent_url('download', t_Id, '')
-    torrent = torrent_filename(view_url)
+def main():
+    parser = argparse.ArgumentParser(prog='nyaa-dl')
+    parser.add_argument('-u', action="store", dest="url", help='The URL from nyaa to parse and download.')
+    parser.add_argument('-i', action="store", dest="inputfilename", help='The input file holding multiple URLs (one per line) from nyaa to parse and download.')
+    parser.add_argument('-d', action="store", dest="debug", default='', help='Turns on debugging, causing additional information to print to the command-line.')
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s '+ script_version)
+    args = parser.parse_args()
+    verbose = args.debug
+    if verbose == 'Y':
+        print 'Args :', args
+    # Use the following code when passing a single URL to to the script
+    if args.url:
+        if verbose == 'Y':
+            print 'Processing url'
+        t_Id = torrent_id(args.url, verbose)
+        view_url = torrent_url('view', t_Id, verbose)
+        download_url = torrent_url('download', t_Id, verbose)
+        torrent = torrent_filename(view_url, verbose)
 
-    if os.path.exists(torrent):
-        print "File already exists."
-    else:
-        torrent_download(download_url, torrent)
+        if os.path.exists(torrent):
+            print "File already exists."
+        else:
+            torrent_download(download_url, torrent)
 
-if (args.inputfilename):
-        filename = args.inputfilename
-        filepath = os.getcwd()
-        urls = [line.rstrip('\n') for line in filename]
+    if args.inputfilename:
+        if verbose == 'Y':
+            print 'Processing torrent list'
+        torrentlist = open_torrent_list(args.inputfilename, verbose)
+        urls = [line.rstrip('\n') for line in torrentlist]
         for u in urls:
-                t_Id = torrent_id(u, '')
-                view_url = torrent_url('view', t_Id, '')
-                download_url = torrent_url('download', t_Id, '')
-                torrent = torrent_filename(view_url)
-                if os.path.exists(torrent):
-                    print torrent + " already exists."
-                else:
-                    torrent_download(download_url, torrent)
+                if len(u) != 0:
+                    t_Id = torrent_id(u, verbose)
+                    view_url = torrent_url('view', t_Id, verbose)
+                    download_url = torrent_url('download', t_Id, verbose)
+                    torrent = torrent_filename(view_url, verbose)
+                    if os.path.exists(torrent):
+                        print torrent + " already exists."
+                    else:
+                        torrent_download(download_url, torrent)
+
+if __name__ == "__main__":
+    main()
